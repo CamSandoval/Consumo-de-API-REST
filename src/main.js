@@ -1,6 +1,7 @@
 
 const url_Api_random = 'https://api.thecatapi.com/v1/images/search?limit=2&api_key=live_rfYQ4wXDI7f3lwl4vM5VuXXeD3aNbUV6Pu7I9gMwP5bAVg2W9IFfhUeH3Xvxo4jS';
 const api_url_favorites = 'https://api.thecatapi.com/v1/favourites?api_key=live_rfYQ4wXDI7f3lwl4vM5VuXXeD3aNbUV6Pu7I9gMwP5bAVg2W9IFfhUeH3Xvxo4jS';
+const api_url_favorites_delete = (id)=> `https://api.thecatapi.com/v1/favourites/${id}?api_key=live_rfYQ4wXDI7f3lwl4vM5VuXXeD3aNbUV6Pu7I9gMwP5bAVg2W9IFfhUeH3Xvxo4jS`;
 const spanError = document.getElementById('error');
 const buttonChange = document.getElementById('change');
 
@@ -37,8 +38,13 @@ async function loadFavourites(){
     if(favourites.status != 200){
         spanError.innerText= `Hubo un error ${favourites.status} ${data.message}`;
     }else{
+        const section = document.getElementById('favoritesMichis');
+        section.innerHTML = '';
+        const h2 = document.createElement('h2');
+        const texth2 = document.createTextNode('Favoritos');
+        h2.appendChild(texth2);
+        section.appendChild(h2);
         data.forEach(i => {
-            const section = document.getElementById('favoritesMichis');
             const article = document.createElement('article');
             const img = document.createElement('img');
             const btn = document.createElement('button');
@@ -46,7 +52,9 @@ async function loadFavourites(){
 
             img.src= i.image.url;
             img.width= 150;
+            img.height = 200;
             btn.appendChild(nodeBtn);
+            btn.onclick = ()=> deleteFavouriteCat(i.id)
             article.appendChild(img);
             article.appendChild(btn);
             section.appendChild(article);
@@ -67,10 +75,31 @@ async function saveFavouriteCat(id){
     });
     const data = await res.json();
     console.log(data);
-    if(res.status != 200){
+    if(res.status !== 200){
         spanError.innerText= `Hubo un error ${res.status} ${data.message}`;
+    }else{
+        console.log('Gato guardado en favoritos');
+        loadFavourites()
     }
 }
 
+async function deleteFavouriteCat(id){
+    const res = await fetch(api_url_favorites_delete(id),{
+        method: 'DELETE',
+        headers: {
+            'Content-Type':'application/json',
+        },
+    });
+    console.log(res);
+    const data = await res.json();
+    console.log(data);
+
+    if(res.status !== 200){
+        spanError.innerHTML= `Hubo un error ${res.status} ${data.message}`;
+    }else{
+        console.log('Gato eliminado en favoritos');
+        loadFavourites();
+    }
+}
 changeTheCat();
 loadFavourites();
