@@ -85,7 +85,7 @@ async function saveFavouriteCat(id){
     if(res.status !== 200){
         spanError.innerText= `Hubo un error ${res.status} ${data.message}`;
     }else{
-        console.log('Gato guardado en favoritos');
+        console.log('Objeto guardado ');
         loadFavourites()
     }
 }
